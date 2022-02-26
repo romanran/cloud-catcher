@@ -21,7 +21,6 @@ dependencies:
   - s3fs
   - toml
   - xarray
-
   # Formatter
   # ---------
   - black
