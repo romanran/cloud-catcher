@@ -1,7 +1,7 @@
 import os
 from goes2go.data import goes_nearesttime
 import matplotlib.pyplot as plt
-from lib import ensure_dir
+from cloud_catcher.lib import ensure_dir
 
 
 class CloudCatcher:
@@ -13,9 +13,7 @@ class CloudCatcher:
         self.dpi = dpi
         ensure_dir(dir)
 
-    def __save_image(self,  photo_name, photo):
-        target_path = os.path.join(
-            self.dir, f"{photo_name}.png").replace("\\", "/")
+    def __save_image(self,  target_path, photo):
         print('SAVING TO: ', target_path)
 
         imshow_args = {'extent': [-5433893.0, 5433893.0, -5433893.0,
@@ -41,6 +39,10 @@ class CloudCatcher:
 
     def start(self, date):
         photo_name = date.strftime("%Y%m%dT%H%M")
+        target_path = os.path.join(
+            self.dir, f"{photo_name}.png").replace("\\", "/")
+        if os.path.exists(target_path):
+            return False
         photo = self.__get_photo_from(date)
-        self.__save_image(photo_name, photo)
+        self.__save_image(target_path, photo)
         return photo_name
