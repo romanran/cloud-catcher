@@ -6,22 +6,24 @@ from goes2go.rgb import load_RGB_channels
 import gc
 from datetime import datetime
 import numpy
+# ------------ STEP 2: start downloading! skip to line 56
 
 
 class CloudCatcher:
-    def __init__(self, dir, data_save_dir, satellite, dpi, band):
+    def __init__(self, dir, data_save_dir, satellite, dpi, band, cmap):
         self.dir = dir
         self.data_save_dir = data_save_dir
         self.satellite = satellite
         self.dpi = dpi
         self.band = band
+        self.cmap = cmap
         ensure_dir(dir)
 
     def __save_image(self,  target_path, photo):
         print('SAVING TO: ', target_path)
         imshow_args = {
             'interpolation': 'none',
-            'cmap': 'Greys'
+            'cmap': self.cmap
         }
         band_str = 'CMI_C' + '%02d' % self.band
 
@@ -30,16 +32,16 @@ class CloudCatcher:
 
         ax = plt.axes(projection=photo.rgb.crs)
         ax.imshow(photo[band_str], **imshow_args)
-        ax.coastlines(linewidth=10)
+        ax.coastlines(color='white')
 
         plt.savefig(target_path, dpi=self.dpi, bbox_inches='tight',
-                    facecolor='black', edgecolor='none')
+                    facecolor='black', edgecolor='black')
         # this is garbage
         del photo
         plt.close('all')
         gc.collect()
 
-    def __get_photo_from(self, date):
+    def __get_photo_from_date(self, date):
         try:
             photo = goes_nearesttime(date,
                                      satellite=self.satellite,
@@ -53,7 +55,10 @@ class CloudCatcher:
         return photo
 
     def start(self, date):
-        photo = self.__get_photo_from(date)
+        # download .n and get the xarray data file
+        photo = self.__get_photo_from_date(date)
+        if not photo:
+            return (False, date)
         photo_time = numpy.array2string(
             photo['time_coverage_end']).replace('\'', '')
         photo_name = datetime.strptime(
@@ -65,6 +70,7 @@ class CloudCatcher:
             return ('photo exists', photo_name)
         print('Saving', target_path)
         if photo:
+            # ------------  STEP 3: save the image! line 22
             self.__save_image(target_path, photo)
             return (True, photo_name)
         return (False, photo_name)

@@ -9,6 +9,7 @@ batches = {
         'every_nth_hour': 3,
         'days': 7,
         'dpi': 900,
-        'band': 16  # 1-16 https://www.goes-r.gov/mission/ABI-bands-quick-info.html
+        'band': 16,  # 1-16 https://www.goes-r.gov/mission/ABI-bands-quick-info.html
+        'cmap': 'Greys'  # https://matplotlib.org/stable/tutorials/colors/colormaps.html
     }
 }
