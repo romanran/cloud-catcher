@@ -9,24 +9,26 @@ def main_task(args):
     date = config.get('start_date') + \
         timedelta(hours=config.get('every_nth_hour') * step_index)
     cc = CloudCatcher(config.get('target_dir'), config.get(
-        'data_save_dir'), config.get('satellite'), config.get('dpi'))
-    cc.start(date)
+        'data_save_dir'), config.get('satellite'), config.get('dpi'), config.get('band'))
+    result = cc.start(date)
+    del cc
+    return result
 
 
 def multi_catch(config):
     no_of_photos = config.get('days') * (24 // config.get('every_nth_hour'))
-
-    with multiprocessing.Pool(multiprocessing.cpu_count() - 1) as process_pool:
+    cpus = min(4, multiprocessing.cpu_count() - 1)
+    with multiprocessing.Pool(cpus) as process_pool:
         try:
             main_task_args = [(step_index, config)
                               for step_index in range(no_of_photos)]
-            process_pool.map(main_task, main_task_args)
+            tasks = process_pool.map(main_task, main_task_args)
             process_pool.close()
-            print('MULTI CATCH DONE')
         except KeyboardInterrupt:
             print("Caught KeyboardInterrupt, terminating workers")
             process_pool.terminate()
         else:
             process_pool.close()
         process_pool.join()
+    print('\n'.join(str(task) for task in tasks))
     return process_pool
