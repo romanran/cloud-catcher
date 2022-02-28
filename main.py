@@ -1,10 +1,10 @@
-import sys
-from cloud_catcher.multi_catch import multi_catch
-from batches.batches import batches
-
 # Hi!
 # ------------  STEP 1, run multiprocess! go to cloud_catcher/multi_catch.py
 # OR skip to cloud_catcher/cloud_catcher,py
+
+import sys
+from cloud_catcher.multi_catch import multi_catch
+from batches.batches import batches
 
 
 def main(batch_name):

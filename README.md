@@ -16,3 +16,6 @@ where batch_key is your key of a batch in batches.py
 Wait for the success info and exit of the process.
 
 Config for RGB recipes https://blaylockbk.github.io/goes2go/_build/html/reference_guide/index.html#rgb-recipes
+
+### Developing
+To add a dependency: conda install -c conda-forge your_lib

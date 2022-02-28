@@ -1,8 +1,8 @@
+# ------------ STEP 1.1: skip to main_task function
 from cloud_catcher.cloud_catcher import CloudCatcher
 from datetime import timedelta
 import multiprocessing
 multiprocessing.freeze_support()
-# ------------ STEP 1.1: skip to line 7 for the main task
 
 
 def main_task(args):
@@ -10,7 +10,7 @@ def main_task(args):
     date = config.get('start_date') + \
         timedelta(hours=config.get('every_nth_hour') * step_index)
     cc = CloudCatcher(config['target_dir'], config['data_save_dir'], config['satellite'], config['dpi'], config['band'], config['cmap'])
-    result = cc.start(date)  # to STEP 2!
+    result = cc.catch(date)  # to STEP 2!
     del cc
     return result
 

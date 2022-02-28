@@ -1,3 +1,4 @@
+# ------------ STEP 2: start downloading! skip to catch function
 import os
 from goes2go.data import goes_nearesttime
 import matplotlib.pyplot as plt
@@ -6,7 +7,7 @@ from goes2go.rgb import load_RGB_channels
 import gc
 from datetime import datetime
 import numpy
-# ------------ STEP 2: start downloading! skip to line 56
+import cartopy.crs as ccrs
 
 
 class CloudCatcher:
@@ -21,25 +22,31 @@ class CloudCatcher:
 
     def __save_image(self,  target_path, photo):
         print('SAVING TO: ', target_path)
+        # https: // scitools.org.uk/cartopy/docs/latest/reference/projections.html
+        target_projection = ccrs.EquidistantConic(
+            central_longitude=-32.46, central_latitude=37.54)
         imshow_args = {
-            'interpolation': 'none',
-            'cmap': self.cmap
+            **photo.rgb.imshow_kwargs,
+            'cmap': self.cmap,
+            'transform': photo.rgb.crs,
+            'interpolation': 'kaiser'
+            # https://matplotlib.org/stable/gallery/images_contours_and_fields/interpolation_methods.html
         }
-        band_str = 'CMI_C' + '%02d' % self.band
-
+        fig = plt.figure(figsize=(10, 10), edgecolor='black')
         plt.style.use('dark_background')
-        plt.gcf().set_facecolor("black")
+        band_str = 'CMI_C' + '%02d' % self.band
+        ax = fig.add_subplot(projection=target_projection)
+        ax.set_extent([-120, 0, 0, 80])
 
-        ax = plt.axes(projection=photo.rgb.crs)
         ax.imshow(photo[band_str], **imshow_args)
-        ax.coastlines(color='white')
-
+        ax.coastlines(linewidth=0.3, color="#00FF66", alpha=1)
+        fig.subplots_adjust(wspace=0.01)
         plt.savefig(target_path, dpi=self.dpi, bbox_inches='tight',
                     facecolor='black', edgecolor='black')
         # this is garbage
-        del photo
         plt.close('all')
         gc.collect()
+        del photo
 
     def __get_photo_from_date(self, date):
         try:
@@ -54,7 +61,7 @@ class CloudCatcher:
             photo = False
         return photo
 
-    def start(self, date):
+    def catch(self, date):
         # download .n and get the xarray data file
         photo = self.__get_photo_from_date(date)
         if not photo:
@@ -68,7 +75,6 @@ class CloudCatcher:
             self.dir, f"{photo_name}.png").replace("\\", "/")
         if os.path.exists(target_path):
             return ('photo exists', photo_name)
-        print('Saving', target_path)
         if photo:
             # ------------  STEP 3: save the image! line 22
             self.__save_image(target_path, photo)
