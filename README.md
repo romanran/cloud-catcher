@@ -19,3 +19,20 @@ Config for RGB recipes https://blaylockbk.github.io/goes2go/_build/html/referenc
 
 ### Developing
 To add a dependency: conda install -c conda-forge your_lib
+
+### nc data arrays
+x = [40, 41, 42, 40, 41, 42, 40, 41, 42] # long
+
+y= [1, 1, 1, 0, 0, 0, -1, -1, -1] # lat
+
+z = [0, 2, 0, 2, 4, 2, 1, 2, 1] # pressure
+
+image grid:
+
+			<- x - longitude
+	 _ _40 41 42 _
+	1 |  0  2  0
+	0 |  2  4  2
+   -1 |  1  2  1
+    🠕			 z - pressure, temperature, windy etc. data 
+	y - latitude

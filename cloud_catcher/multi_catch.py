@@ -9,7 +9,8 @@ def main_task(args):
     step_index, config = args
     date = config.get('start_date') + \
         timedelta(hours=config.get('every_nth_hour') * step_index)
-    cc = CloudCatcher(config['target_dir'], config['data_save_dir'], config['satellite'], config['dpi'], config['band'], config['cmap'])
+    cc = CloudCatcher(config['target_dir'], config['data_save_dir'],
+                      config['satellite'], config['dpi'], config['band'], config['cmap'])
     result = cc.catch(date)  # to STEP 2!
     del cc
     return result
